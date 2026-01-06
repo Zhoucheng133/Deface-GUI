@@ -12,9 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "deface_gui",
+        "title": "Deface GUI",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "resizable": false,
+        "hiddenTitle": true,
+        "titleBarStyle": "Transparent",
+        "center": true
       }
     ],
     "security": {
