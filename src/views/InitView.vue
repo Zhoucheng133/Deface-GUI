@@ -6,8 +6,15 @@
 </template>
 
 <script lang="ts" setup>
-import { open } from '@tauri-apps/plugin-dialog';
-async function pickFile(){
+import { listen } from '@tauri-apps/api/event';
+import { message, open } from '@tauri-apps/plugin-dialog';
+import { onBeforeUnmount, onMounted } from 'vue';
+import { path } from '@tauri-apps/api';
+import store from '../store';
+
+let unlisten: any;
+
+async function pickFile() {
   const file = await open({
     multiple: false,
     directory: false,
@@ -20,9 +27,40 @@ async function pickFile(){
   });
 
   if(file){
-    // TODO: 添加文件
+    store().filePath = file;
   }
 }
+
+async function dropHandler(targets: any) {
+  const filePath=targets[0];
+  const extension=await path.extname(filePath);
+  if(extension==='.mp4'||extension==='.mkv'||extension==='.avi'){
+    store().filePath = filePath;
+  }else{
+    await message('不支持的文件', { title: '无法处理', kind: 'error' });
+  }
+
+}
+
+onMounted(async ()=>{
+  unlisten = await listen('tauri://drag-drop', async (event: any) => {
+    const payload = event?.payload;
+    if (
+      payload &&
+      typeof payload === 'object' &&
+      Array.isArray(payload.paths) &&
+      typeof payload.paths[0] === 'string'
+    ) {
+      const targets = payload.paths;
+      dropHandler(targets);
+    }
+  });
+})
+
+onBeforeUnmount(() => {
+  if (unlisten) unlisten();
+});
+
 
 </script>
 
