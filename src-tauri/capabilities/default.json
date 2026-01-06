@@ -13,13 +13,31 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "exec-sh",
-          "cmd": "sh",
+          "name": "ffmpeg",
+          "cmd": "ffmpeg",
           "args": [
-            "-c",
-            {
-              "validator": "\\S+"
-            }
+            { "validator": ".*" }
+          ]
+        },
+        {
+          "name": "python",
+          "cmd": "python",
+          "args": [
+            { "validator": ".*" }
+          ]
+        },
+        {
+          "name": "python3",
+          "cmd": "python3",
+          "args": [
+            { "validator": ".*" }
+          ]
+        },
+        {
+          "name": "deface",
+          "cmd": "deface",
+          "args": [
+            { "validator": ".*" }
           ]
         }
       ]
