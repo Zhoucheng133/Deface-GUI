@@ -1,5 +1,6 @@
 import { message } from '@tauri-apps/plugin-dialog';
 import { Command } from '@tauri-apps/plugin-shell';
+import store from '../store';
 
 async function ffmpegCheck(): Promise<boolean> {
   try {
@@ -53,4 +54,7 @@ export async function envCheck(){
       await message('没有找到Deface', { title: '初始化失败', kind: 'error' });
     }
   }
+
+  store().inited=true;
+  return;
 }
