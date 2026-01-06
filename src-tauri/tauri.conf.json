@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "deface_gui",
+  "productName": "Deface GUI",
   "version": "0.1.0",
   "identifier": "zhouc.deface_gui",
   "build": {
