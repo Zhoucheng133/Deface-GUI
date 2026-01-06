@@ -34,7 +34,7 @@ async function pickFile() {
 async function dropHandler(targets: any) {
   const filePath=targets[0];
   const extension=await path.extname(filePath);
-  if(extension==='.mp4'||extension==='.mkv'||extension==='.avi'){
+  if(extension==='mp4'||extension==='mkv'||extension==='avi'){
     store().filePath = filePath;
   }else{
     await message('不支持的文件', { title: '无法处理', kind: 'error' });
