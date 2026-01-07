@@ -35,11 +35,10 @@
             <div class="scale_value text-right">{{ defaceConfig.maskScale }}</div>
           </div>
         </div>
-        <div class="item" style="margin-top: auto;">
-          <div class="key">输出位置</div>
-          <div class="value">
-            {{ outputPath }}
-          </div>
+        <div class="output">
+          <div style="font-weight: bold; margin-right: 10px;">输出</div>
+          <v-text-field density="compact" :disabled="true" v-model="outputPath" :hide-details="true"></v-text-field>
+          <v-btn @click="pickOutput">选择</v-btn>
         </div>
       </div>
     </div>
@@ -52,19 +51,29 @@
 import useStore, { ReplaceWith } from '../store';
 import { storeToRefs } from 'pinia'
 import { path } from '@tauri-apps/api';
+import { open } from '@tauri-apps/plugin-dialog';
 import { onMounted, ref, shallowRef } from 'vue';
 
 const { defaceConfig, filePath, outputPath } = storeToRefs(useStore())
 
 const fileName=ref("");
 
-const selectedReplace = shallowRef({ text: "马赛克", value: ReplaceWith.mosaic })
+const selectedReplace = shallowRef({ text: "模糊", value: ReplaceWith.blur })
 const replaceItems=[
   { text: "无", value: ReplaceWith.none },
   { text: "马赛克", value: ReplaceWith.mosaic },
   { text: "模糊", value: ReplaceWith.blur },
   { text: "色块", value: ReplaceWith.solid }
 ]
+
+async function pickOutput(){
+  const file = await open({
+    directory: true,
+  });
+  if(file){
+    outputPath.value=file;
+  }
+}
 
 onMounted(async ()=>{
   fileName.value=await path.basename(filePath.value);
@@ -77,6 +86,12 @@ function replaceChanged(value: any) {
 </script>
 
 <style scoped>
+.output{
+  width: 100%;
+  display: flex;
+  margin-top: auto;
+  align-items: center;
+}
 .slider{
   display: grid;
   grid-template-columns: auto 20px;
