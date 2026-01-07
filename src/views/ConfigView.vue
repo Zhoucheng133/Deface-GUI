@@ -1,15 +1,139 @@
 <template>
   <div class="page">
-    <video :src="convertFileSrc(store().filePath)" width="400px" controls></video>
+    <div class="config">
+      <div class="panel shadow-lg">
+        <div class="title">
+          {{ fileName }}
+        </div>
+        <div class="item">
+          <div class="key">路径</div>
+          <div class="value line-clamp-3">{{ filePath }}</div>
+        </div>
+        <div class="item" style="grid-template-columns: 95px auto;">
+          <div class="key">Thresh</div>
+          <div class="value slider">
+            <v-slider v-model="defaceConfig.thresh" :max="1" :min="0" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary"></v-slider>
+            <div class="thresh_value text-right">{{ defaceConfig.thresh }}</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="key">保留音频</div>
+          <div class="value">
+            <v-switch v-model="defaceConfig.keepAudio" color="primary" :hide-details="true"></v-switch>
+          </div>
+        </div>
+        <div class="item">
+          <div class="key">遮罩</div>
+          <div class="value">
+            <v-select v-model="selectedReplace" :items="replaceItems" item-title="text" item-value="value" density="compact" :hide-details="true" @update:modelValue="replaceChanged"></v-select>
+          </div>
+        </div>
+        <div class="item" style="grid-template-columns: 95px auto;" v-if="defaceConfig.replaceWith == ReplaceWith.mosaic">
+          <div class="key">马赛克大小</div>
+          <div class="value slider">
+            <v-slider v-model="defaceConfig.maskScale" :max="2" :min="0.1" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary"></v-slider>
+            <div class="scale_value text-right">{{ defaceConfig.maskScale }}</div>
+          </div>
+        </div>
+        <div class="item" style="margin-top: auto;">
+          <div class="key">输出位置</div>
+          <div class="value">
+            {{ outputPath }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="log"></div>
   </div>
 </template>
 
 
 <script lang="ts" setup>
-import { convertFileSrc } from '@tauri-apps/api/core';
-import store from '../store';
+import useStore, { ReplaceWith } from '../store';
+import { storeToRefs } from 'pinia'
+import { path } from '@tauri-apps/api';
+import { onMounted, ref, shallowRef } from 'vue';
+
+const { defaceConfig, filePath, outputPath } = storeToRefs(useStore())
+
+const fileName=ref("");
+
+const selectedReplace = shallowRef({ text: "马赛克", value: ReplaceWith.mosaic })
+const replaceItems=[
+  { text: "无", value: ReplaceWith.none },
+  { text: "马赛克", value: ReplaceWith.mosaic },
+  { text: "模糊", value: ReplaceWith.blur },
+  { text: "色块", value: ReplaceWith.solid }
+]
+
+onMounted(async ()=>{
+  fileName.value=await path.basename(filePath.value);
+})
+
+function replaceChanged(value: any) {
+  defaceConfig.value.replaceWith=value;
+}
+
 </script>
 
 <style scoped>
-
+.slider{
+  display: grid;
+  grid-template-columns: auto 20px;
+  align-items: center;
+}
+.key{
+  font-weight: bold;
+}
+.value{
+  width: 100%;
+}
+.item{
+  display: grid;
+  grid-template-columns: 100px auto;
+  margin-top: 15px;
+  align-items: center;
+}
+.title{
+  font-size: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+}
+.panel{
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-color: white;
+  padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.video_preview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.config{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-top: 50px;
+}
+.page{
+  display: grid;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+  width: 100%;
+  grid-template-columns: 1fr 400px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
 </style>
