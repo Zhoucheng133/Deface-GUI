@@ -1,4 +1,5 @@
 <template>
+  <div class="title_bar" data-tauri-drag-region></div>
   <InitView v-if="store().filePath.length==0" />
   <ConfigView v-else />
 </template>
@@ -14,3 +15,12 @@ onMounted(()=>{
   envCheck();
 })
 </script>
+
+<style scoped>
+.title_bar{
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 35px;
+}
+</style>
