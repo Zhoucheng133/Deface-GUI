@@ -3,7 +3,8 @@
     <div class="config">
       <div class="panel shadow-lg">
         <div class="title">
-          {{ fileName }}
+          <div>{{ fileName }}</div>
+          <v-btn class="close_btn" density="comfortable" icon="mdi-close" @click="closeFile"></v-btn>
         </div>
         <div class="item">
           <div class="key">路径</div>
@@ -75,6 +76,10 @@ const replaceItems=[
   { text: "色块", value: ReplaceWith.solid }
 ]
 
+function closeFile(){
+  filePath.value="";
+}
+
 async function pickOutput(){
   const file = await open({
     directory: true,
@@ -97,6 +102,14 @@ function replaceChanged(value: any) {
 </script>
 
 <style scoped>
+.title_text{
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.close_btn{
+  margin-left: auto;
+}
 .log_item{
   width: 100%;
   overflow: hidden;
@@ -147,9 +160,11 @@ function replaceChanged(value: any) {
 }
 .title{
   font-size: 20px;
-  overflow: hidden;
   text-overflow: ellipsis;
   font-weight: bold;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 .panel{
   width: 100%;
@@ -168,6 +183,7 @@ function replaceChanged(value: any) {
   padding-bottom: 20px;
   padding-left: 20px;
   padding-top: 50px;
+  min-width: 0;
 }
 .page{
   display: grid;
