@@ -24,11 +24,13 @@ export default defineStore("index", ()=>{
   let defaceConfig = ref<DefaceConfig>(new DefaceConfig());
 
   let outputPath = ref("");
+  let running = ref(false);
 
   return {
     inited,
     filePath,
     defaceConfig,
     outputPath,
+    running,
   };
 })
