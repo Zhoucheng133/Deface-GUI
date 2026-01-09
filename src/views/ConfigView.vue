@@ -37,8 +37,12 @@
         </div>
         <div class="output">
           <div style="font-weight: bold; margin-right: 10px;">输出</div>
-          <v-text-field density="compact" :disabled="true" v-model="outputPath" :hide-details="true"></v-text-field>
-          <v-btn @click="pickOutput">选择</v-btn>
+          <v-tooltip :text="outputPath" location="top">
+            <template v-slot:activator="{ props }">
+              <v-text-field v-bind="props" density="compact" readonly v-model="outputPath" :hide-details="true"></v-text-field>
+            </template>
+          </v-tooltip>
+          <v-btn @click="pickOutput" :disabled="running">选择</v-btn>
         </div>
       </div>
     </div>
@@ -54,7 +58,7 @@ import { path } from '@tauri-apps/api';
 import { open } from '@tauri-apps/plugin-dialog';
 import { onMounted, ref, shallowRef } from 'vue';
 
-const { defaceConfig, filePath, outputPath } = storeToRefs(useStore())
+const { defaceConfig, filePath, outputPath, running } = storeToRefs(useStore())
 
 const fileName=ref("");
 
@@ -73,10 +77,12 @@ async function pickOutput(){
   if(file){
     outputPath.value=file;
   }
+  localStorage.setItem("outputPath", outputPath.value);
 }
 
 onMounted(async ()=>{
   fileName.value=await path.basename(filePath.value);
+  outputPath.value=localStorage.getItem("outputPath")||filePath.value;
 })
 
 function replaceChanged(value: any) {
