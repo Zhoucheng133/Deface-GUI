@@ -28,8 +28,8 @@
             <v-select v-model="selectedReplace" :items="replaceItems" item-title="text" item-value="value" density="compact" :hide-details="true" @update:modelValue="replaceChanged" :disabled="running"></v-select>
           </div>
         </div>
-        <div class="item" style="grid-template-columns: 95px auto;" v-if="defaceConfig.replaceWith == ReplaceWith.mosaic">
-          <div class="key">马赛克大小</div>
+        <div class="item" style="grid-template-columns: 95px auto;">
+          <div class="key">遮罩缩放</div>
           <div class="value slider">
             <v-slider v-model="defaceConfig.maskScale" :max="2" :min="0.1" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary" :disabled="running"></v-slider>
             <div class="scale_value text-right">{{ defaceConfig.maskScale }}</div>
@@ -47,9 +47,12 @@
       </div>
     </div>
     <div class="log">
-      <v-fab class="float_icon" :icon="running ? 'mdi-stop' : 'mdi-play'" @click="useStore().handler"></v-fab>
+      <div class="log_content">
+        <div class="log_item" v-for="item in logs">{{ item }}</div>
+      </div>
     </div>
   </div>
+  <v-fab class="float_icon" :icon="running ? 'mdi-stop' : 'mdi-play'" @click="useStore().handler"></v-fab>
 </template>
 
 
@@ -60,7 +63,7 @@ import { path } from '@tauri-apps/api';
 import { open } from '@tauri-apps/plugin-dialog';
 import { onMounted, ref, shallowRef } from 'vue';
 
-const { defaceConfig, filePath, outputPath, running } = storeToRefs(useStore())
+const { defaceConfig, filePath, outputPath, running, logs } = storeToRefs(useStore())
 
 const fileName=ref("");
 
@@ -94,8 +97,28 @@ function replaceChanged(value: any) {
 </script>
 
 <style scoped>
+.log_item{
+  width: 100%;
+  overflow: hidden;
+}
+.log_content{
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+.log{
+  padding-top: 50px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .float_icon{
-  position: absolute;
+  position: fixed;
   right: 20px;
   bottom: 40px;
 }
@@ -137,13 +160,6 @@ function replaceChanged(value: any) {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-.video_preview{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .config{
   width: 100%;
