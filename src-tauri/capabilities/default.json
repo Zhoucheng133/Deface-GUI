@@ -10,6 +10,43 @@
     "opener:default",
     "shell:default",
     "core:window:allow-start-dragging",
+    "shell:allow-kill",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "defaceWithAudio",
+          "cmd": "deface",
+          "args": [
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" }
+          ]
+        },
+        {
+          "name": "defaceWithoutAudio",
+          "cmd": "deface",
+          "args": [
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" },
+            { "validator": ".*" }
+          ]
+        }
+      ]
+    },
     {
       "identifier": "shell:allow-execute",
       "allow": [
