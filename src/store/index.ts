@@ -26,11 +26,16 @@ export default defineStore("index", ()=>{
   let outputPath = ref("");
   let running = ref(false);
 
+  function handler(){
+    running.value = !running.value;
+  }
+
   return {
     inited,
     filePath,
     defaceConfig,
     outputPath,
     running,
+    handler,
   };
 })

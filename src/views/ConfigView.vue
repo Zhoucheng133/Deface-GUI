@@ -12,26 +12,26 @@
         <div class="item" style="grid-template-columns: 95px auto;">
           <div class="key">Thresh</div>
           <div class="value slider">
-            <v-slider v-model="defaceConfig.thresh" :max="1" :min="0" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary"></v-slider>
+            <v-slider v-model="defaceConfig.thresh" :max="1" :min="0" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary" :disabled="running"></v-slider>
             <div class="thresh_value text-right">{{ defaceConfig.thresh }}</div>
           </div>
         </div>
         <div class="item">
           <div class="key">保留音频</div>
           <div class="value">
-            <v-switch v-model="defaceConfig.keepAudio" color="primary" :hide-details="true"></v-switch>
+            <v-switch v-model="defaceConfig.keepAudio" color="primary" :hide-details="true" :disabled="running"></v-switch>
           </div>
         </div>
         <div class="item">
           <div class="key">遮罩</div>
           <div class="value">
-            <v-select v-model="selectedReplace" :items="replaceItems" item-title="text" item-value="value" density="compact" :hide-details="true" @update:modelValue="replaceChanged"></v-select>
+            <v-select v-model="selectedReplace" :items="replaceItems" item-title="text" item-value="value" density="compact" :hide-details="true" @update:modelValue="replaceChanged" :disabled="running"></v-select>
           </div>
         </div>
         <div class="item" style="grid-template-columns: 95px auto;" v-if="defaceConfig.replaceWith == ReplaceWith.mosaic">
           <div class="key">马赛克大小</div>
           <div class="value slider">
-            <v-slider v-model="defaceConfig.maskScale" :max="2" :min="0.1" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary"></v-slider>
+            <v-slider v-model="defaceConfig.maskScale" :max="2" :min="0.1" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary" :disabled="running"></v-slider>
             <div class="scale_value text-right">{{ defaceConfig.maskScale }}</div>
           </div>
         </div>
@@ -46,7 +46,9 @@
         </div>
       </div>
     </div>
-    <div class="log"></div>
+    <div class="log">
+      <v-fab class="float_icon" :icon="running ? 'mdi-stop' : 'mdi-play'" @click="useStore().handler"></v-fab>
+    </div>
   </div>
 </template>
 
@@ -92,6 +94,11 @@ function replaceChanged(value: any) {
 </script>
 
 <style scoped>
+.float_icon{
+  position: absolute;
+  right: 20px;
+  bottom: 40px;
+}
 .output{
   width: 100%;
   display: flex;
