@@ -1,7 +1,19 @@
-# Tauri + Vue + TypeScript
+# Deface GUI
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 简介
 
-## Recommended IDE Setup
+<img src="./src-tauri/icon.png" width="100px">
 
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+![License](https://img.shields.io/badge/License-MIT-dark_green)
+
+**基于[Deface](https://github.com/ORB-HD/deface)的GUI程序，使用Tauri开发**
+
+## 截图
+
+<img src="./demo/demo.png" width="500px">
+
+
+## 使用
+
+1. 安装[Deface](https://github.com/ORB-HD/deface)，详细安装方法见其仓库
+2. 直接使用本App即可
