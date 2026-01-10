@@ -8,12 +8,20 @@
         </div>
         <div class="item">
           <div class="key">路径</div>
-          <div class="value line-clamp-3">{{ filePath }}</div>
+          <v-tooltip :text="filePath" location="top">
+            <template v-slot:activator="{ props }">
+              <div v-bind="props" class="value line-clamp-3">{{ filePath }}</div>
+            </template>
+          </v-tooltip>
         </div>
         <div class="item" style="grid-template-columns: 95px auto;">
           <div class="key">Thresh</div>
           <div class="value slider">
-            <v-slider v-model="defaceConfig.thresh" :max="1" :min="0" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary" :disabled="running"></v-slider>
+            <v-tooltip text="识别的阈值，越小越准确同时更有可能会误判" location="top">
+              <template v-slot:activator="{ props }">
+                <v-slider v-bind="props" v-model="defaceConfig.thresh" :max="1" :min="0" :step="0.1" density="compact" style="margin-bottom: 0;" :hide-details="true" color="primary" :disabled="running"></v-slider>
+              </template>
+            </v-tooltip>
             <div class="thresh_value text-right">{{ defaceConfig.thresh }}</div>
           </div>
         </div>
