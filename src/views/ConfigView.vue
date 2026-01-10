@@ -48,8 +48,11 @@
       </div>
     </div>
     <div class="log">
-      <div class="log_content">
+      <div class="log_content" v-if="logs.length!=0">
         <div class="log_item" v-for="item in logs">{{ item }}</div>
+      </div>
+      <div class="loading" v-else-if="running">
+        <v-progress-circular indeterminate></v-progress-circular>
       </div>
     </div>
   </div>
@@ -78,6 +81,7 @@ const replaceItems=[
 
 function closeFile(){
   filePath.value="";
+  logs.value=[];
 }
 
 async function pickOutput(){
@@ -102,6 +106,13 @@ function replaceChanged(value: any) {
 </script>
 
 <style scoped>
+.loading{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .title_text{
   width: 100%;
   overflow: hidden;
