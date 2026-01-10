@@ -74,6 +74,7 @@ export default defineStore("index", ()=>{
 
       command.on('close', async (_) => {
         running.value = false;
+        logs.value.unshift("✅ Done");
       })
 
       child = await command.spawn();
