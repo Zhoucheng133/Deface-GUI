@@ -8,6 +8,8 @@
 
 **基于[Deface](https://github.com/ORB-HD/deface)的GUI程序，使用Tauri开发**
 
+用于将视频里的人物脸进行模糊/马赛克处理
+
 ## 截图
 
 <img src="./demo/demo.png" width="500px">
