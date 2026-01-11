@@ -48,7 +48,7 @@ async fn run_task(
 
                     if let Some(code) = payload.code {
                         let msg = if code == 0 {
-                            "\n✅ 任务成功完成！" 
+                            "\n✅ 任务完成" 
                         } else { 
                             "\n❌ 任务失败" 
                         };

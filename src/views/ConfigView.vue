@@ -123,11 +123,9 @@ onMounted(async ()=>{
   })
 
   unlistenEnd=await listen<string>("end", (event)=>{
+    logs.value=[];
     logs.value.unshift(event.payload);
     running.value=false;
-    if(logs.value.length>50){
-      logs.value.pop();
-    }
   })
 })
 
