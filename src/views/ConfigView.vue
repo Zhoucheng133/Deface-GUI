@@ -104,7 +104,7 @@ async function pickOutput(){
 
 onMounted(async ()=>{
   fileName.value=await path.basename(filePath.value);
-  outputPath.value=localStorage.getItem("outputPath")||filePath.value;
+  outputPath.value=localStorage.getItem("outputPath")|| "";
 })
 
 function replaceChanged(value: any) {
