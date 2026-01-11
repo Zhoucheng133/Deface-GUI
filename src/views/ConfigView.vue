@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <div class="config">
+    <div class="config" :style="{paddingTop: os=='macos' ? '50px': '20px'}">
       <div class="panel shadow-lg">
         <div class="title">
           <div>{{ fileName }}</div>
@@ -55,7 +55,7 @@
         </div>
       </div>
     </div>
-    <div class="log">
+    <div class="log" :style="{paddingTop: os=='macos' ? '50px': '20px'}">
       <div class="log_content" v-if="logs.length!=0">
         <div class="log_item" v-for="item in logs">{{ item }}</div>
       </div>
@@ -74,6 +74,8 @@ import { storeToRefs } from 'pinia'
 import { path } from '@tauri-apps/api';
 import { open } from '@tauri-apps/plugin-dialog';
 import { onMounted, ref, shallowRef } from 'vue';
+import { platform } from '@tauri-apps/plugin-os';
+const os = platform();
 
 const { defaceConfig, filePath, outputPath, running, logs } = storeToRefs(useStore())
 
@@ -139,7 +141,6 @@ function replaceChanged(value: any) {
   overflow-y: auto;
 }
 .log{
-  padding-top: 50px;
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 20px;
@@ -201,7 +202,6 @@ function replaceChanged(value: any) {
   display: flex;
   padding-bottom: 20px;
   padding-left: 20px;
-  padding-top: 50px;
   min-width: 0;
 }
 .page{
