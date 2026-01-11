@@ -1,87 +1,62 @@
-use std::{process::Stdio, sync::Arc};
-use tokio::io::{AsyncReadExt};
-use tokio::{io::BufReader, sync::Mutex};
-use tokio::process::Child;
-use tauri::{State, Window, Emitter};
-pub struct CommandState(pub Arc<Mutex<Option<Child>>>);
+use std::sync::{Arc, Mutex}; 
+use tauri::{State, Window, Emitter, AppHandle};
+use tauri_plugin_shell::ShellExt;
+use tauri_plugin_shell::process::{CommandChild, CommandEvent};
+
+pub struct CommandState(pub Arc<Mutex<Option<CommandChild>>>);
 
 #[tauri::command]
 async fn run_task(
+    app: AppHandle,
     window: Window, 
     state: State<'_, CommandState>, 
     args: Vec<String>
 ) -> Result<(), String> {
-    let mut lock = state.0.lock().await;
+    let mut lock = state.0.lock().map_err(|_| "锁获取失败")?;
+    
     if lock.is_some() {
         return Err("已有任务在运行中".to_string());
     }
 
-    let mut child = tokio::process::Command::new("deface")
+    let cmd = app.shell().command("deface")
         .args(args)
-        .env("PYTHONUNBUFFERED", "1")
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
+        .env("PYTHONUNBUFFERED", "1");
+
+    let (mut rx, child) = cmd
         .spawn()
         .map_err(|e| e.to_string())?;
 
-    let stdout = child.stdout.take().unwrap();
-    let stderr = child.stderr.take().unwrap();
-    
     *lock = Some(child);
-    drop(lock);
-
-    let window_stdout = window.clone();
-    tokio::spawn(async move {
-        let mut reader = BufReader::new(stdout);
-        let mut buffer: [u8; 1024] = [0u8; 1024];
-        loop {
-            match reader.read(&mut buffer).await {
-                Ok(0) => break,
-                Ok(n) => {
-                    let content = String::from_utf8_lossy(&buffer[..n]).to_string();
-                    let _ = window_stdout.emit("log", content);
-                }
-                Err(_) => break,
-            }
-        }
-    });
-
-    let window_stderr = window.clone();
-    tokio::spawn(async move {
-        let mut reader = BufReader::new(stderr);
-        let mut buffer: [u8; 1024] = [0u8; 1024];
-        loop {
-            match reader.read(&mut buffer).await {
-                Ok(0) => break,
-                Ok(n) => {
-                    let content = String::from_utf8_lossy(&buffer[..n]).to_string();
-                    let _ = window_stderr.emit("log", content);
-                }
-                Err(_) => break,
-            }
-        }
-    });
+    drop(lock); 
 
     let state_clone = state.0.clone();
-    tokio::spawn(async move {
-        loop {
-            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-            let mut lock = state_clone.lock().await;
-            
-            let is_finished = if let Some(c) = lock.as_mut() {
-                match c.try_wait() {
-                    Ok(Some(_status)) => true,
-                    Ok(None) => false,
-                    Err(_) => true,
+    tauri::async_runtime::spawn(async move {
+        while let Some(event) = rx.recv().await {
+            match event {
+                CommandEvent::Stdout(line_bytes) => {
+                    let content = String::from_utf8_lossy(&line_bytes).to_string();
+                    let _ = window.emit("log", content);
                 }
-            } else {
-                return;
-            };
+                CommandEvent::Stderr(line_bytes) => {
+                    let content = String::from_utf8_lossy(&line_bytes).to_string();
+                    let _ = window.emit("log", content);
+                }
+                CommandEvent::Terminated(payload) => {
+                    let mut lock = state_clone.lock().unwrap();
+                    *lock = None;
 
-            if is_finished {
-                *lock = None;
-                let _ = window.emit("log", "✅ Done!");
-                break;
+                    if let Some(code) = payload.code {
+                        let msg = if code == 0 {
+                            "\n✅ 任务成功完成！" 
+                        } else { 
+                            "\n❌ 任务失败" 
+                        };
+                        let _ = window.emit("log", msg);
+                    } else {
+                        let _ = window.emit("log", "\n🛑 任务已终止");
+                    }
+                }
+                _ => {}
             }
         }
     });
@@ -91,20 +66,21 @@ async fn run_task(
 
 #[tauri::command]
 async fn stop_task(state: State<'_, CommandState>) -> Result<String, String> {
-    let mut lock = state.0.lock().await;
+    // 获取标准库锁
+    let mut lock = state.0.lock().map_err(|_| "锁获取失败")?;
 
-    if let Some(mut child) = lock.take() {
+    if let Some(child) = lock.take() {
         #[cfg(target_os = "windows")]
         {
-            if let Some(pid) = child.id() {
-                let _ = std::process::Command::new("taskkill")
-                    .args(["/F", "/T", "/PID", &pid.to_string()])
-                    .spawn();
-            }
+            let pid = child.pid();
+            let _ = std::process::Command::new("taskkill")
+                .args(["/F", "/T", "/PID", &pid.to_string()])
+                .creation_flags(0x08000000)
+                .spawn();
         }
 
-        let _ = child.kill().await;
-        Ok("已停止当前任务".to_string())
+        let _ = child.kill();
+        Ok("已发送停止指令".to_string())
     } else {
         Err("当前没有正在运行的任务".to_string())
     }
