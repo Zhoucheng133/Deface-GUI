@@ -1,4 +1,5 @@
 import { path } from "@tauri-apps/api";
+import { message } from "@tauri-apps/plugin-dialog";
 import { Child, Command } from "@tauri-apps/plugin-shell";
 import { defineStore } from "pinia";
 import { ref } from "vue";
@@ -37,6 +38,13 @@ export default defineStore("index", ()=>{
     logs.value = [];
 
     if(running.value){
+      if(outputPath.value.length==0){
+        running.value = false;
+        logs.value.unshift("❌ No Output Path");
+        await message('没有选择输出目录', { title: '错误', kind: 'error' });
+        return;
+      }
+
       const fullOutputPath=await path.join(outputPath.value, "output.mp4");
       let args=[
         filePath.value,
@@ -53,8 +61,6 @@ export default defineStore("index", ()=>{
       if(defaceConfig.value.keepAudio){
         args.push('-k');
       }
-
-      console.log(args);
 
       const command = Command.create(defaceConfig.value.keepAudio ? "defaceWithAudio" : "defaceWithoutAudio", args);
 
