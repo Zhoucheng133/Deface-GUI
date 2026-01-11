@@ -52,9 +52,9 @@ async fn run_task(
                         } else { 
                             "\n❌ 任务失败" 
                         };
-                        let _ = window.emit("log", msg);
+                        let _ = window.emit("end", msg);
                     } else {
-                        let _ = window.emit("log", "\n🛑 任务已终止");
+                        let _ = window.emit("end", "\n🛑 任务已终止");
                     }
                 }
                 _ => {}
@@ -71,17 +71,6 @@ async fn stop_task(state: State<'_, CommandState>) -> Result<String, String> {
     let mut lock = state.0.lock().map_err(|_| "锁获取失败")?;
 
     if let Some(child) = lock.take() {
-        #[cfg(target_os = "windows")]
-        {
-            use std::os::windows::process::CommandExt;
-
-            let pid = child.pid();
-            let _ = std::process::Command::new("taskkill")
-                .args(["/F", "/T", "/PID", &pid.to_string()])
-                .creation_flags(0x08000000)
-                .spawn();
-        }
-
         let _ = child.kill();
         Ok("已发送停止指令".to_string())
     } else {

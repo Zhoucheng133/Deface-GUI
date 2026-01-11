@@ -105,13 +105,14 @@ async function pickOutput(){
   localStorage.setItem("outputPath", outputPath.value);
 }
 
-let unlisten: any;
+let unlistenLog: any;
+let unlistenEnd: any;
 
 onMounted(async ()=>{
   fileName.value=await path.basename(filePath.value);
   outputPath.value=localStorage.getItem("outputPath")|| "";
 
-  unlisten=await listen<string>("log", (event)=>{
+  unlistenLog=await listen<string>("log", (event)=>{
     if(event.payload.includes("resource_tracker")){
       return;
     }
@@ -120,10 +121,19 @@ onMounted(async ()=>{
       logs.value.pop();
     }
   })
+
+  unlistenEnd=await listen<string>("end", (event)=>{
+    logs.value.unshift(event.payload);
+    running.value=false;
+    if(logs.value.length>50){
+      logs.value.pop();
+    }
+  })
 })
 
 onUnmounted(()=>{
-  unlisten?.();
+  unlistenLog?.();
+  unlistenEnd?.();
 })
 
 function replaceChanged(value: any) {
