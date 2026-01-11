@@ -139,7 +139,7 @@ function replaceChanged(value: any) {
   overflow-y: auto;
 }
 .log{
-  padding-top: 50px;
+  padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 20px;
@@ -201,7 +201,7 @@ function replaceChanged(value: any) {
   display: flex;
   padding-bottom: 20px;
   padding-left: 20px;
-  padding-top: 50px;
+  padding-top: 20px;
   min-width: 0;
 }
 .page{
