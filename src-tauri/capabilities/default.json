@@ -11,6 +11,7 @@
     "shell:default",
     "core:window:allow-start-dragging",
     "shell:allow-kill",
+    "os:default",
     {
       "identifier": "shell:allow-spawn",
       "allow": [
