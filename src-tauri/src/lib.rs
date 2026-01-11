@@ -20,7 +20,8 @@ async fn run_task(
 
     let cmd = app.shell().command("deface")
         .args(args)
-        .env("PYTHONUNBUFFERED", "1");
+        .env("PYTHONUNBUFFERED", "1")
+        .env("PYTHONUTF8", "1");
 
     let (mut rx, child) = cmd
         .spawn()
@@ -72,6 +73,8 @@ async fn stop_task(state: State<'_, CommandState>) -> Result<String, String> {
     if let Some(child) = lock.take() {
         #[cfg(target_os = "windows")]
         {
+            use std::os::windows::process::CommandExt;
+
             let pid = child.pid();
             let _ = std::process::Command::new("taskkill")
                 .args(["/F", "/T", "/PID", &pid.to_string()])
