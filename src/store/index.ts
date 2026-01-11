@@ -1,6 +1,6 @@
 import { path } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { message } from "@tauri-apps/plugin-dialog";
-import { Child, Command } from "@tauri-apps/plugin-shell";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -31,8 +31,6 @@ export default defineStore("index", ()=>{
 
   let logs=ref<string[]>([]);
 
-  let child: Child | null = null;
-
   async function handler(){
     running.value = !running.value;
     logs.value = [];
@@ -62,31 +60,9 @@ export default defineStore("index", ()=>{
         args.push('-k');
       }
 
-      const command = Command.create(defaceConfig.value.keepAudio ? "defaceWithAudio" : "defaceWithoutAudio", args);
-
-      command.stdout.on('data', (line) => {
-        logs.value.unshift(line);
-        if(logs.value.length > 50){
-          logs.value.pop();
-        }
-      });
-
-      command.stderr.on('data', (line) => {
-        logs.value.unshift(line);
-        if(logs.value.length > 50){
-          logs.value.pop();
-        }
-      });
-
-      command.on('close', async (_) => {
-        running.value = false;
-        logs.value.unshift("✅ Done");
-      })
-
-      child = await command.spawn();
+      await invoke("run_task", { args: args });
     }else{
-      await child?.kill();
-      child = null;
+      await invoke("stop_task");
     }
   }
 

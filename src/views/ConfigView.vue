@@ -73,8 +73,9 @@ import useStore, { ReplaceWith } from '../store';
 import { storeToRefs } from 'pinia'
 import { path } from '@tauri-apps/api';
 import { open } from '@tauri-apps/plugin-dialog';
-import { onMounted, ref, shallowRef } from 'vue';
+import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { platform } from '@tauri-apps/plugin-os';
+import { listen } from '@tauri-apps/api/event';
 const os = platform();
 
 const { defaceConfig, filePath, outputPath, running, logs } = storeToRefs(useStore())
@@ -104,9 +105,25 @@ async function pickOutput(){
   localStorage.setItem("outputPath", outputPath.value);
 }
 
+let unlisten: any;
+
 onMounted(async ()=>{
   fileName.value=await path.basename(filePath.value);
   outputPath.value=localStorage.getItem("outputPath")|| "";
+
+  unlisten=await listen<string>("log", (event)=>{
+    if(event.payload.includes("resource_tracker")){
+      return;
+    }
+    logs.value.unshift(event.payload);
+    if(logs.value.length>50){
+      logs.value.pop();
+    }
+  })
+})
+
+onUnmounted(()=>{
+  unlisten?.();
 })
 
 function replaceChanged(value: any) {
