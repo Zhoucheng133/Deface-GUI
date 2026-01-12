@@ -44,6 +44,13 @@
             <div class="scale_value text-right">{{ defaceConfig.maskScale }}</div>
           </div>
         </div>
+        <div class="item" style="margin-bottom: 20px;">
+          <div class="key">重命名</div>
+          <div class="value flex align-center">
+            <v-text-field v-model="name" :hide-details="true" density="compact"></v-text-field>
+            <div style="margin-left: 5px;">.mp4</div>
+          </div>
+        </div>
         <div class="output">
           <div style="font-weight: bold; margin-right: 10px;">输出</div>
           <v-tooltip :text="outputPath" location="top">
@@ -78,7 +85,7 @@ import { platform } from '@tauri-apps/plugin-os';
 import { listen } from '@tauri-apps/api/event';
 const os = platform();
 
-const { defaceConfig, filePath, outputPath, running, logs } = storeToRefs(useStore())
+const { defaceConfig, filePath, outputPath, running, logs, name } = storeToRefs(useStore())
 
 const fileName=ref("");
 

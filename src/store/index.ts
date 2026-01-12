@@ -30,6 +30,7 @@ export default defineStore("index", ()=>{
   let running = ref(false);
 
   let logs=ref<string[]>([]);
+  let name=ref("output");
 
   async function handler(){
     running.value = !running.value;
@@ -43,7 +44,7 @@ export default defineStore("index", ()=>{
         return;
       }
 
-      const fullOutputPath=await path.join(outputPath.value, "output.mp4");
+      const fullOutputPath=await path.join(outputPath.value, `${name}.mp4`);
       let args=[
         filePath.value,
         '--output',
@@ -73,6 +74,7 @@ export default defineStore("index", ()=>{
     outputPath,
     running,
     handler,
-    logs
+    logs,
+    name
   };
 })
