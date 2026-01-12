@@ -6,6 +6,11 @@ use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 pub struct CommandState(pub Arc<Mutex<Option<CommandChild>>>);
 
 #[tauri::command]
+fn check_path(dir: String, file: String) -> bool {
+    return std::path::Path::new(&dir).join(&file).exists()
+}
+
+#[tauri::command]
 async fn run_task(
     app: AppHandle,
     window: Window, 
@@ -86,7 +91,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![run_task, stop_task])
+        .invoke_handler(tauri::generate_handler![run_task, stop_task, check_path])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
