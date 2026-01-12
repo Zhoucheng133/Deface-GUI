@@ -3,7 +3,7 @@
     <div class="config" :style="{paddingTop: os=='macos' ? '50px': '20px'}">
       <div class="panel shadow-lg">
         <div class="title">
-          <div>{{ fileName }}</div>
+          <div class="line-clamp-2">{{ fileName }}</div>
           <v-btn class="close_btn" density="comfortable" icon="mdi-close" @click="closeFile"></v-btn>
         </div>
         <div class="item">
