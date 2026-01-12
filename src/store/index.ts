@@ -44,7 +44,7 @@ export default defineStore("index", ()=>{
         return;
       }
 
-      const fullOutputPath=await path.join(outputPath.value, `${name}.mp4`);
+      const fullOutputPath=await path.join(outputPath.value, `${name.value}.mp4`);
       let args=[
         filePath.value,
         '--output',
