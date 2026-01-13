@@ -44,6 +44,17 @@ export default defineStore("index", ()=>{
         return;
       }
 
+      const inValidPath = await invoke("check_path", {
+        dir: outputPath.value,
+        file: `${name.value}.mp4`
+      });
+
+      if(inValidPath){
+        running.value = false;
+        await message('文件已存在', { title: '错误', kind: 'error' });
+        return;
+      }
+
       const fullOutputPath=await path.join(outputPath.value, `${name.value}.mp4`);
       let args=[
         filePath.value,
