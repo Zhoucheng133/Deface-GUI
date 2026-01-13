@@ -100,6 +100,7 @@ const replaceItems=[
 function closeFile(){
   filePath.value="";
   logs.value=[];
+  name.value="";
 }
 
 async function pickOutput(){
