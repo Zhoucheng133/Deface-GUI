@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="item" style="margin-bottom: 20px;">
-          <div class="key">重命名</div>
+          <div class="key">文件名</div>
           <div class="value flex align-center">
             <v-text-field v-model="name" :hide-details="true" density="compact"></v-text-field>
             <div style="margin-left: 5px;">.mp4</div>

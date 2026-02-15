@@ -33,6 +33,10 @@ export default defineStore("index", ()=>{
   let name=ref("output");
 
   async function handler(){
+    if(name.value.length==0){
+      await message('没有设置输出文件名', { title: '无法执行', kind: 'error' });
+      return;
+    }
     running.value = !running.value;
     logs.value = [];
 

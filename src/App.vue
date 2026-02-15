@@ -19,9 +19,9 @@ onMounted(async ()=>{
   const appWindow = getCurrentWindow()
   getCurrentWindow().show();
   const systemTheme = await appWindow.theme();
-  theme.global.name.value = systemTheme || 'light';
+  theme.change(systemTheme || 'light')
   await appWindow.listen('tauri://theme-changed', (event) => {
-    theme.global.name.value = event.payload as string
+    theme.change(event.payload as string)
   })
 })
 </script>
