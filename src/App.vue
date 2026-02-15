@@ -17,12 +17,12 @@ const theme = useTheme()
 onMounted(async ()=>{
   envCheck();
   const appWindow = getCurrentWindow()
-  getCurrentWindow().show();
   const systemTheme = await appWindow.theme();
   theme.change(systemTheme || 'light')
   await appWindow.listen('tauri://theme-changed', (event) => {
     theme.change(event.payload as string)
   })
+  getCurrentWindow().show();
 })
 </script>
 

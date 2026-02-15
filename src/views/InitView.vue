@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <v-btn color="primary" icon="mdi-plus" @click="pickFile"></v-btn>
+    <v-btn icon="mdi-plus" @click="pickFile"></v-btn>
     <div class="tip">添加一个视频文件，你也可以将文件拖拽到这里</div>
   </div>
 </template>
