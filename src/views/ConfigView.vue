@@ -248,4 +248,12 @@ function replaceChanged(value: any) {
   -webkit-user-select: none;
   -moz-user-select: none;
 }
+@media (prefers-color-scheme: dark) {
+  .page{
+    background-color: rgb(50, 50, 50);
+  }
+  .panel{
+    background-color: black;
+  }
+}
 </style>

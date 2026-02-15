@@ -78,6 +78,13 @@ onBeforeUnmount(() => {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-color: white;
+}
+@media (prefers-color-scheme: dark) {
+  .page{
+    background-color: rgb(50, 50, 50);
+  }
+  .tip{
+    color: white;
+  }
 }
 </style>

@@ -11,10 +11,18 @@ import InitView from './views/InitView.vue';
 import ConfigView from './views/ConfigView.vue';
 import store from './store';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { useTheme } from 'vuetify';
+const theme = useTheme()
 
-onMounted(()=>{
+onMounted(async ()=>{
   envCheck();
+  const appWindow = getCurrentWindow()
   getCurrentWindow().show();
+  const systemTheme = await appWindow.theme();
+  theme.global.name.value = systemTheme || 'light';
+  await appWindow.listen('tauri://theme-changed', (event) => {
+    theme.global.name.value = event.payload as string
+  })
 })
 </script>
 
