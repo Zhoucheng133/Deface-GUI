@@ -9,7 +9,7 @@ import * as directives from 'vuetify/directives';
 
 import './style.css';
 
-import { createPinia } from 'pinia'
+import { createPinia } from 'pinia';
 
 const vuetify = createVuetify({
   components,

@@ -10,9 +10,11 @@ import { envCheck } from './utils/env_check';
 import InitView from './views/InitView.vue';
 import ConfigView from './views/ConfigView.vue';
 import store from './store';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 onMounted(()=>{
   envCheck();
+  getCurrentWindow().show();
 })
 </script>
 
