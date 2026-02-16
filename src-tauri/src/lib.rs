@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex}; 
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::{State, Window, Emitter, AppHandle};
 use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
@@ -86,6 +87,50 @@ async fn stop_task(state: State<'_, CommandState>) -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            let handle = app.handle();
+            let locale = "zh";
+            let (app_menu_name, quit_label, edit_label, copy_label, paste_label, select_all_label, undo_label, redo_label) = 
+            if locale == "zh" {
+                ("应用", "退出 Deface GUI", "编辑", "复制", "粘贴", "全选", "撤销", "重做")
+            } else {
+                ("App", "Quit Deface GUI", "Edit", "Copy", "Paste", "Select All", "Undo", "Redo")
+            };
+            
+            let quit_i = MenuItem::with_id(handle, "quit", quit_label, true, Some("CmdOrCtrl+Q"))?;
+            let app_menu = Submenu::with_items(
+                handle, 
+                app_menu_name, 
+                true, 
+                &[&quit_i]
+            )?;
+
+            let edit_menu = Submenu::with_items(
+                handle,
+                edit_label,
+                true,
+                &[
+                    &PredefinedMenuItem::undo(handle, Some(undo_label))?,
+                    &PredefinedMenuItem::redo(handle, Some(redo_label))?,
+                    &PredefinedMenuItem::separator(handle)?,
+                    &PredefinedMenuItem::copy(handle, Some(copy_label))?,
+                    &PredefinedMenuItem::paste(handle, Some(paste_label))?,
+                    &PredefinedMenuItem::select_all(handle, Some(select_all_label))?,
+                ],
+            )?;
+
+            let menu = Menu::with_items(handle, &[&app_menu, &edit_menu])?;
+            app.set_menu(menu)?;
+
+            // 5. 监听事件 (只有 MenuItem 需要手动处理，PredefinedMenuItem 自动运行)
+            app.on_menu_event(move |app_handle, event| {
+                if event.id() == quit_i.id() {
+                    app_handle.exit(0);
+                }
+            });
+
+            Ok(())
+        })
         .manage(CommandState(Arc::new(Mutex::new(None))))
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
