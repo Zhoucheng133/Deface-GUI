@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex}; 
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
+use tauri::menu::{Menu, PredefinedMenuItem, Submenu};
 use tauri::{State, Window, Emitter, AppHandle};
 use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
@@ -90,19 +90,23 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle();
             let locale = "zh";
-            let (app_menu_name, quit_label, edit_label, copy_label, paste_label, select_all_label, undo_label, redo_label) = 
+            let (app_menu_name, quit_label, edit_label, copy_label, paste_label, select_all_label, undo_label, redo_label, window_label, minimize_label, fullscreen_label, about_label, hide_label) = 
             if locale == "zh" {
-                ("应用", "退出 Deface GUI", "编辑", "复制", "粘贴", "全选", "撤销", "重做")
+                ("应用", "退出 Deface GUI", "编辑", "复制", "粘贴", "全选", "撤销", "重做", "窗口", "最小化", "进入全屏幕", "关于 Deface GUI", "隐藏 Deface GUI")
             } else {
-                ("App", "Quit Deface GUI", "Edit", "Copy", "Paste", "Select All", "Undo", "Redo")
+                ("App", "Quit Deface GUI", "Edit", "Copy", "Paste", "Select All", "Undo", "Redo", "Window", "Minimize", "Fullscreen", "About Deface GUI", "Hide Deface GUI")
             };
             
-            let quit_i = MenuItem::with_id(handle, "quit", quit_label, true, Some("CmdOrCtrl+Q"))?;
             let app_menu = Submenu::with_items(
                 handle, 
                 app_menu_name, 
                 true, 
-                &[&quit_i]
+                &[
+                    &PredefinedMenuItem::about(handle, Some(about_label), None)?,
+                    &PredefinedMenuItem::separator(handle)?,
+                    &PredefinedMenuItem::hide(handle, Some(hide_label))?,
+                    &PredefinedMenuItem::quit(handle, Some(quit_label))?
+                ]
             )?;
 
             let edit_menu = Submenu::with_items(
@@ -119,16 +123,18 @@ pub fn run() {
                 ],
             )?;
 
-            let menu = Menu::with_items(handle, &[&app_menu, &edit_menu])?;
+            let window_menu = Submenu::with_items(
+                handle,
+                window_label,
+                true,
+                &[
+                    &PredefinedMenuItem::minimize(handle, Some(minimize_label))?,
+                    &PredefinedMenuItem::fullscreen(handle, Some(fullscreen_label))?,
+                ],
+            )?;
+
+            let menu = Menu::with_items(handle, &[&app_menu, &edit_menu, &window_menu])?;
             app.set_menu(menu)?;
-
-            // 5. 监听事件 (只有 MenuItem 需要手动处理，PredefinedMenuItem 自动运行)
-            app.on_menu_event(move |app_handle, event| {
-                if event.id() == quit_i.id() {
-                    app_handle.exit(0);
-                }
-            });
-
             Ok(())
         })
         .manage(CommandState(Arc::new(Mutex::new(None))))
