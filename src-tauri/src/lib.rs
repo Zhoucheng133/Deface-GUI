@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex}; 
+#[cfg(target_os = "macos")]
 use tauri::menu::{Menu, PredefinedMenuItem, Submenu};
 use tauri::{State, Window, Emitter, AppHandle};
 use tauri_plugin_shell::ShellExt;
@@ -138,6 +139,8 @@ pub fn run() {
                 let menu = Menu::with_items(handle, &[&app_menu, &edit_menu, &window_menu])?;
                 app.set_menu(menu)?;
             }
+            #[cfg(target_os = "windows")]
+            app.hide_menu()?;
             Ok(())
         })
         .manage(CommandState(Arc::new(Mutex::new(None))))
